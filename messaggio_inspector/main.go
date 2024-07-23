@@ -45,28 +45,28 @@ var (
 	brokers = ""
 	group   = ""
 	topic   = ""
-	host    = ""
+	recipient_host    = ""
 )
 
 // Getting the values ​​for the configuration
 func init() {
-	flag.StringVar(&brokers, "brokers", "localhost:9092", "Kafka bootstrap brokers to connect to, as a comma separated list")
-	flag.StringVar(&group, "group", "example-consumer-group", "Kafka consumer group definition")
-	flag.StringVar(&topic, "topic", "messaggio", "Kafka topic to be consumed")
-	flag.StringVar(&host, "host", "localhost:8888", "Host of the response recipient")
-
+	flag.StringVar(&brokers, "brokers", os.Getenv("KAFKA_BROKERS"), "Kafka bootstrap brokers to connect to, as a comma separated list")
+	flag.StringVar(&group, "group", os.Getenv("CONSUMER_GROUP"), "Kafka consumer group definition")
+	flag.StringVar(&topic, "topic", os.Getenv("KAFKA_TOPIC"), "Kafka topic to be consumed")
+	flag.StringVar(&recipient_host, "host", os.Getenv("RECIPIENT_HOST"), "Host of the response recipient")
 	flag.Parse()
 
 	if len(brokers) == 0 {
 		panic("no Kafka bootstrap brokers defined, please set the -brokers flag")
 	}
-
 	if len(topic) == 0 {
 		panic("no topic given to be consumed, please set the -topic flag")
 	}
-
 	if len(group) == 0 {
 		panic("no Kafka consumer group defined, please set the -group flag")
+	}
+	if len(recipient_host) == 0 {
+		panic("no recipient_host defined, please set the -recipient_host flag")
 	}
 }
 
@@ -132,14 +132,14 @@ func CheckCandidate(ch chan Candidate) Answer {
 	workerData := <-ch
 	// Имитируем работу.
 	time.After(3 * time.Second)
-	// Генерируем значение (1 или -1) в соотношением 30/70
+	// Генерируем значение (1 или -1) с соотношением 30/70
 	var num int
 	if rand.Intn(10) < 3 {
 		num = -1
 	} else {
 		num = 1
 	}
-	
+
 	answer := Answer{
 		ID:      workerData.ID,
 		Approve: num,
@@ -161,7 +161,7 @@ func SendMessage(answer Answer) {
 
 	clientHTTP := &http.Client{}
 
-	req, err := http.NewRequest(http.MethodPost, "http://" +host+ "/approval/", buffer)
+	req, err := http.NewRequest(http.MethodPost, "http://"+recipient_host+"/approval/", buffer)
 	if err != nil {
 		fmt.Printf("Error creating HTTP request: %v\n", err)
 	}
