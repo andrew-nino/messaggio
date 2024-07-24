@@ -1,0 +1,145 @@
+{
+	"info": {
+		"_postman_id": "570a797e-5944-4899-b07a-b4b281b92cb3",
+		"name": "Messaggio",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24421732"
+	},
+	"item": [
+		{
+			"name": "Add Client",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"surname\": \"Boris\",\n    \"name\": \"Britva\",\n    \"patronymic\": \"\",\n    \"email\": \"test@mail.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://83.136.232.77:8888/client/add",
+					"protocol": "http",
+					"host": [
+						"83",
+						"136",
+						"232",
+						"77"
+					],
+					"port": "8888",
+					"path": [
+						"client",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Client",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\":       1,\n    \"surname\":  \"Termit\",\n    \"name\":     \"Andrew\",\n    \"patronymic\": \"Ryricovich\",\n    \"email\":    \"test@mail.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://83.136.232.77:8888/client/update",
+					"protocol": "http",
+					"host": [
+						"83",
+						"136",
+						"232",
+						"77"
+					],
+					"port": "8888",
+					"path": [
+						"client",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Client",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://83.136.232.77:8888/client/delete/1",
+					"protocol": "http",
+					"host": [
+						"83",
+						"136",
+						"232",
+						"77"
+					],
+					"port": "8888",
+					"path": [
+						"client",
+						"delete",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Statistic",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://83.136.232.77:8888/client/statistic",
+					"protocol": "http",
+					"host": [
+						"83",
+						"136",
+						"232",
+						"77"
+					],
+					"port": "8888",
+					"path": [
+						"client",
+						"statistic"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Client",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://83.136.232.77:8888/client/get/1",
+					"protocol": "http",
+					"host": [
+						"83",
+						"136",
+						"232",
+						"77"
+					],
+					"port": "8888",
+					"path": [
+						"client",
+						"get",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

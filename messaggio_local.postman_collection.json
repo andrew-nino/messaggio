@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"surname\": \"Termit\",\n    \"name\": \"Andrew\",\n    \"patronymic\": \"\",\n    \"email\": \"test@mail.com\"\n}",
+					"raw": "{\n    \"surname\": \"Boris\",\n    \"name\": \"Britva\",\n    \"patronymic\": \"\",\n    \"email\": \"test@mail.com\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -96,6 +96,26 @@
 					"path": [
 						"client",
 						"statistic"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Client",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/client/get/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"client",
+						"get",
+						"1"
 					]
 				}
 			},
