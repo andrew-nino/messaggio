@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -41,20 +40,12 @@ type Client struct {
 	Approve    int    `bd:"approve" json:"approve" default:"0"`
 }
 
-var (
-	brokers = ""
-	group   = ""
-	topic   = ""
-	recipient_host    = ""
-)
-
-// Getting the values ​​for the configuration
-func init() {
-	flag.StringVar(&brokers, "brokers", os.Getenv("KAFKA_BROKERS"), "Kafka bootstrap brokers to connect to, as a comma separated list")
-	flag.StringVar(&group, "group", os.Getenv("CONSUMER_GROUP"), "Kafka consumer group definition")
-	flag.StringVar(&topic, "topic", os.Getenv("KAFKA_TOPIC"), "Kafka topic to be consumed")
-	flag.StringVar(&recipient_host, "host", os.Getenv("RECIPIENT_HOST"), "Host of the response recipient")
-	flag.Parse()
+func main() {
+	// Getting the values ​​for the configuration
+	brokers := os.Getenv("KAFKA_BROKERS")
+	group := os.Getenv("CONSUMER_GROUP")
+	topic := os.Getenv("KAFKA_TOPIC")
+	recipient_host := os.Getenv("RECIPIENT_HOST")
 
 	if len(brokers) == 0 {
 		panic("no Kafka bootstrap brokers defined, please set the -brokers flag")
@@ -68,11 +59,10 @@ func init() {
 	if len(recipient_host) == 0 {
 		panic("no recipient_host defined, please set the -recipient_host flag")
 	}
-}
 
-func main() {
-	// make a new reader that consumes from topic-A
+	// make a new reader that consumes from topic
 	addrs := strings.Split(brokers, ",")
+
 	r := kafka.NewReader(kafka.ReaderConfig{
 		Brokers:  addrs,
 		GroupID:  group,
@@ -81,7 +71,7 @@ func main() {
 		MaxBytes: 10e6, // 10MB
 	})
 
-	fmt.Println("Starting consumer...")
+	fmt.Println("Starting inspector...")
 
 	var workerChan = make(chan Candidate)
 	defer close(workerChan)
@@ -90,7 +80,7 @@ func main() {
 		for {
 			go ReadMessage(r, workerChan)
 			answer := CheckCandidate(workerChan)
-			SendMessage(answer)
+			SendMessage(answer, recipient_host)
 		}
 	}()
 
@@ -132,7 +122,7 @@ func CheckCandidate(ch chan Candidate) Answer {
 	workerData := <-ch
 	// Имитируем работу.
 	time.After(3 * time.Second)
-	// Генерируем значение (1 или -1) с соотношением 30/70
+	// Генерируем значение (-1 или 1) с соотношением 30/70
 	var num int
 	if rand.Intn(10) < 3 {
 		num = -1
@@ -148,14 +138,14 @@ func CheckCandidate(ch chan Candidate) Answer {
 }
 
 // SendMessage sends the response back via HTTP
-func SendMessage(answer Answer) {
+func SendMessage(answer Answer, recipient_host string) {
 
 	dataJson, err := json.Marshal(answer)
 	if err != nil {
 		fmt.Printf("Error marshalling : %v\n", err)
 	}
 
-	fmt.Println("Starting client...")
+	fmt.Printf("Sending a solution to id  %d\n", answer.ID)
 
 	buffer := bytes.NewBuffer(dataJson)
 
@@ -167,10 +157,11 @@ func SendMessage(answer Answer) {
 	}
 
 	resp, err := clientHTTP.Do(req)
+	if resp.Body != nil {
+		defer resp.Body.Close()
+	}
 	if err != nil {
 		fmt.Printf("Error sending HTTP request: %v\n", err)
-	} else if resp.Body != nil {
-		defer resp.Body.Close()
 	}
 
 	bodyBytes, err := io.ReadAll(resp.Body)
