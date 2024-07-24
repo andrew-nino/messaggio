@@ -1,0 +1,105 @@
+{
+	"info": {
+		"_postman_id": "570a797e-5944-4899-b07a-b4b281b92cb3",
+		"name": "Messaggio",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24421732"
+	},
+	"item": [
+		{
+			"name": "Add Client",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"surname\": \"Termit\",\n    \"name\": \"Andrew\",\n    \"patronymic\": \"\",\n    \"email\": \"test@mail.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/client/add",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"client",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Client",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\":       1,\n    \"surname\":  \"Termit\",\n    \"name\":     \"Andrew\",\n    \"patronymic\": \"Ryricovich\",\n    \"email\":    \"test@mail.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/client/update",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"client",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Client",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/client/delete/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"client",
+						"delete",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Statistic",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/client/statistic",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"client",
+						"statistic"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
