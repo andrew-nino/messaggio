@@ -20,6 +20,11 @@ services:
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+    healthcheck:
+      test: ["CMD", "kafkacat", "-L", "-b", "kafka:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   init-kafka:
     networks:
@@ -53,38 +58,6 @@ services:
       - KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS=kafka:9092
       - KAFKA_CLUSTERS_0_NAME=kraft
 
-  registry:
-    networks:
-      - webnet
-    container_name: registry
-    build: ./messaggio_registry
-    environment:
-      KAFKA_BROKERS: kafka:9092
-      KAFKA_TOPIC: messaggio
-    ports:
-      - 8888:8888
-    depends_on:
-      - postgres
-      - kafka
-      - init-kafka
-    restart: unless-stopped
-
-  inspector:
-    networks:
-      - webnet
-    container_name: inspector
-    build: ./messaggio_inspector
-    environment:
-      KAFKA_BROKERS: kafka:9092
-      CONSUMER_GROUP: inspector_group
-      KAFKA_TOPIC: messaggio
-      RECIPIENT_HOST: registry:8888
-    depends_on:
-      - postgres
-      - kafka
-      - init-kafka
-    restart: unless-stopped
-   
   postgres:
     networks:
       - webnet
@@ -98,8 +71,47 @@ services:
       POSTGRES_PASSWORD: qwerty
     ports:
       - "5432:5432"
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+    restart: unless-stopped
+    
+  registry:
+    networks:
+      - webnet
+    container_name: registry
+    build: ./messaggio_registry
+    environment:
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_TOPIC: messaggio
+    ports:
+      - 8888:8888
+    depends_on:
+        postgres:
+          condition: service_healthy
+        init-kafka:
+          condition: service_completed_successfully
     restart: unless-stopped
 
+  inspector:
+    networks:
+      - webnet
+    container_name: inspector
+    build: ./messaggio_inspector
+    environment:
+      KAFKA_BROKERS: kafka:9092
+      CONSUMER_GROUP: inspector_group
+      KAFKA_TOPIC: messaggio
+      RECIPIENT_HOST: registry:8888
+    depends_on:
+        postgres:
+          condition: service_healthy
+        init-kafka:
+          condition: service_completed_successfully
+    restart: unless-stopped
+   
 networks:
   webnet:
 volumes:
