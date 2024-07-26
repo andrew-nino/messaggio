@@ -43,5 +43,18 @@ login-registry:
 db-psql:
 	docker compose  exec postgres psql -Upostgres
 
-swag: ### initialize or update swag
-	swag init -g cmd/app/main.go
+test: ### run test
+	cd messaggio_registry && \
+	go test -v ./...
+
+test-cover: ### run test with coverage
+	cd messaggio_registry && \
+	go test -coverprofile=coverage.out ./... && \
+	go tool cover -func=coverage.out && \
+	rm coverage.out
+
+test-cover-html: ### run test with coverage and open html report
+	cd messaggio_registry && \
+	go test -coverprofile=coverage.out ./... && \
+	go tool cover -html=coverage.out	&& \
+	rm coverage.out
